@@ -1,0 +1,17 @@
+services:
+  email-service:
+    build: .
+    container_name: email-service
+    environment:
+      - KAFKA_HOST=kafka
+      - KAFKA_PORT=9092
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}"
+    networks:
+      - usernet
+
+networks:
+  usernet:
+    external: true
