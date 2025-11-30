@@ -29,7 +29,7 @@ public class KafkaEmailListener {
             String text = String.format("""
                     Bonjour %s,
                     Merci de vous être inscrit sur notre plateforme. Veuillez cliquer sur le lien ci-dessous pour vérifier votre adresse e-mail et activer votre compte :
-                    http://localhost:8080/users/validate?token=%s
+                    http://localhost:5050/users/validate?token=%s
                     """, message.get("name"), token);
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
