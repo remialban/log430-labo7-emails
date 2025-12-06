@@ -1,5 +1,6 @@
 package com.log430.email;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -34,6 +35,66 @@ public class KafkaEmailListener {
 
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(to);
+            mailMessage.setSubject(subject);
+            mailMessage.setText(text);
+            System.out.println(mailMessage);
+            mailSender.send(mailMessage);
+            System.out.println("Message envoyé avec succès");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'envoi de l'email : " + e.getMessage());
+        }
+
+    }
+
+    @KafkaListener(topics = "newOrder", groupId = "mail-group")
+    public void onNewOrdre(Map<String, String> message) {
+        try {
+            // Map to json :
+
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(message);
+
+            System.out.println("Creation d'un ordre : " + json);
+
+            String subject = "Ordre créé";
+            String text = String.format("""
+                    Bonjour %s,
+                    L'ordre que vous avez réalisé a bien été créé : %s
+                    """, json);
+            String email = message.get("email");
+
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setSubject(subject);
+            mailMessage.setText(text);
+            System.out.println(mailMessage);
+            mailSender.send(mailMessage);
+            System.out.println("Message envoyé avec succès");
+        } catch (Exception e) {
+            System.err.println("Erreur lors de l'envoi de l'email : " + e.getMessage());
+        }
+
+    }
+
+    @KafkaListener(topics = "updateOrder", groupId = "mail-group")
+    public void onUpdateOrdre(Map<String, String> message) {
+
+
+        try {
+            // Map to json :
+
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(message);
+
+            System.out.println("Mise a jour d'un ordre : " + json);
+
+            String subject = "Mise a jour d'un ordre";
+            String text = String.format("""
+                    Bonjour %s,
+                    Un ordre a été mis à jour : %s
+                    """, json);
+            String email = message.get("email");
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(email);
             mailMessage.setSubject(subject);
             mailMessage.setText(text);
             System.out.println(mailMessage);
